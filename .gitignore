@@ -1,0 +1,9 @@
+/node_modules
+/crawlers/__pycache__/
+/crawlers/*.py[cod]
+/.env
+/data/*.json
+/data/*.csv
+/.venv/
+
+/scripts
