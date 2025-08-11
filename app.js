@@ -13,6 +13,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var apiRouter = require('./routes/api');
 var authRouter = require('./routes/auth');
+var enquireRouter = require('./routes/enquire');
 
 var app = express();
 
@@ -37,6 +38,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/api', requireBearer, apiRouter);
 app.use('/auth', authRouter);
+app.use('/enquire', requireBearer, enquireRouter);
 
 app.use(function(req, res, next) {
   next(createError(404));
