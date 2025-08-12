@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 from typing import List, Dict
-from .utils import get_soup, norm_space, save_json, save_csv
+try:
+    from .utils import get_soup, norm_space, save_json, save_csv
+except Exception:
+    from utils import get_soup, norm_space, save_json, save_csv
 
 
 def scrape_news(limit: int = 100) -> List[Dict]:
     base = "https://www.isro.gov.in"
-    url = f"{base}/Press_Release.html"
+    url = f"{base}/Press.html"
     soup = get_soup(url)
     items: List[Dict] = []
     for a in soup.select('a'):

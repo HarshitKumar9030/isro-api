@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken')
 const config = require('../config')
 
 async function authOptional(req, res, next) {
+  // try read bearer token, if exist we attach user, else just pass
   try {
     const h = req.headers.authorization || ''
     const token = h.startsWith('Bearer ') ? h.slice(7) : null
@@ -14,6 +15,7 @@ async function authOptional(req, res, next) {
 }
 
 function requireBearer(req, res, next) {
+  // this one is strict, must have bearer
   try {
     const h = req.headers.authorization || ''
     const token = h.startsWith('Bearer ') ? h.slice(7) : null
@@ -22,6 +24,7 @@ function requireBearer(req, res, next) {
     req.user = { sub: decoded.sub, name: decoded.name || '', email: decoded.email }
     return next()
   } catch (e) {
+    // token bad or expired, we say no
     return res.status(401).json({ error: 'invalid token' })
   }
 }
