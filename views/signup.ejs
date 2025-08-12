@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Signup</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = { theme: { extend: { fontFamily: { inter: ['Inter','ui-sans-serif','system-ui'] } } } }
+  </script>
+  <style>input,button{outline:none}</style>
+  </head>
+<body class="min-h-screen bg-zinc-950 text-zinc-200 font-inter">
+  <div class="min-h-screen flex items-center justify-center p-6">
+    <form class="w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6" method="post" action="/auth/signup">
+      <h1 class="text-2xl font-semibold mb-6">Get your API key</h1>
+      <label class="block text-sm mb-1">Name</label>
+      <input name="name" class="w-full bg-zinc-950 border border-zinc-800 focus:border-zinc-600 rounded px-3 py-2 mb-4 transition-colors" />
+      <label class="block text-sm mb-1">Email</label>
+      <input required name="email" type="email" class="w-full bg-zinc-950 border border-zinc-800 focus:border-zinc-600 rounded px-3 py-2 mb-6 transition-colors" />
+      <button class="w-full bg-zinc-100 hover:bg-white text-zinc-900 rounded-md py-2 transition-colors">Sign up</button>
+  <p class="text-xs text-zinc-400 mt-3">We’ll email your API key. You can exchange it for a Bearer token at <code>POST /auth/exchange</code>, then use <code>Authorization: Bearer &lt;token&gt;</code>.</p>
+    </form>
+  </div>
+</body>
+</html>
