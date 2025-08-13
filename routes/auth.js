@@ -34,6 +34,7 @@ router.get('/signup', (req, res) => {
 router.post('/signup', async (req, res) => {
   const email = String(req.body.email || '').trim()
   const name = String(req.body.name || '').trim() || 'user'
+  const planSelected = String(req.body.plan || 'free').toLowerCase()
   if (!email) return res.status(400).json({ error: 'email required' })
   const existing = await findByEmail(email)
   if (existing) return res.status(400).json({ error: 'already exists' })
@@ -55,7 +56,31 @@ router.post('/signup', async (req, res) => {
   } catch (e) {
     return res.status(500).json({ error: 'email failed' })
   }
-  res.json({ ok: true, message: 'Access details sent to your email' })
+  try { req.session.token = token } catch {}
+  try { res.cookie('jwt', token, { httpOnly: true, sameSite: 'lax' }) } catch {}
+  const upgrade = ['hobby','pro','business'].includes(planSelected)
+  res.json({ ok: true, message: 'Access details sent to your email', token, planSelected, upgrade })
+})
+
+router.post('/login', async (req, res) => {
+  const email = String(req.body.email || '')
+  const apiKey = String(req.body.apiKey || '')
+  const user = await findByEmail(email)
+  if (!user) return res.status(400).json({ error: 'invalid user' })
+  const { hash } = require('../utils/users')
+  if (user.apiKeyHash !== hash(apiKey)) return res.status(400).json({ error: 'invalid key' })
+  const exp = Math.floor(Date.now() / 1000) + 60 * 60 * 24
+  const token = jwt.sign({ sub: user._id, name: user.name, email: user.email, exp }, config.jwtSecret)
+  try { req.session.token = token } catch {}
+  try { res.cookie('jwt', token, { httpOnly: true, sameSite: 'lax' }) } catch {}
+  res.json({ token, token_type: 'Bearer', expires_in: 60 * 60 * 24 })
+})
+
+
+router.post('/logout', (req, res) => {
+  try { req.session.destroy(()=>{}) } catch {}
+  try { res.clearCookie('jwt') } catch {}
+  res.json({ ok: true })
 })
 
 module.exports = router

@@ -27,6 +27,7 @@ async function createUser(email, name) {
     email: String(email).toLowerCase(),
     name,
     apiKeyHash: hash(apiKey),
+    plan: 'free', // default plan
     createdAt: new Date()
   }
   await col.insertOne(doc)
@@ -40,4 +41,11 @@ async function findByApiKey(key) {
   return await col.findOne({ apiKeyHash: h })
 }
 
-module.exports = { findByEmail, findByApiKey, createUser, hash }
+async function findById(id) {
+  const db = await getDb()
+  const col = db.collection('users')
+  await ensureIndexes(col)
+  return await col.findOne({ _id: id })
+}
+
+module.exports = { findByEmail, findByApiKey, createUser, findById, hash }
