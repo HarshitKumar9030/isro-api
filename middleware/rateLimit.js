@@ -1,6 +1,7 @@
 const crypto = require('crypto')
 
 function ipKey(req) {
+  // get ip best we can, sometimes proxy hide
   return req.ip || req.connection?.remoteAddress || 'unknown'
 }
 
@@ -23,6 +24,7 @@ function makeLimiter({ windowMs, unauthLimit, authLimit }) {
   return function limiter(req, res, next) {
     const now = Date.now()
 
+    // count hits per ip for window
     const ipBase = 'ip:' + ipKey(req)
     const ipKeyW = windowKey(ipBase, now, windowMs)
     const ipVal = store.get(ipKeyW) || { count: 0, start: now }
@@ -32,6 +34,7 @@ function makeLimiter({ windowMs, unauthLimit, authLimit }) {
     const tk = tokenKey(req)
     let tokVal = null
     if (tk) {
+      // also count per token if present
       const tokKeyW = windowKey(tk, now, windowMs)
       tokVal = store.get(tokKeyW) || { count: 0, start: now }
       tokVal.count += 1
@@ -52,9 +55,11 @@ function makeLimiter({ windowMs, unauthLimit, authLimit }) {
     if (tk) res.set('X-RateLimit-Token-Remaining', String(tokRemaining))
 
     if (ipVal.count > unauthLimit) {
+  // too many from ip
       return res.status(429).json({ error: 'rate limit exceeded (ip)' })
     }
     if (tk && tokVal.count > authLimit) {
+  // too many for token
       return res.status(429).json({ error: 'rate limit exceeded (token)' })
     }
 
